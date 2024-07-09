@@ -6,6 +6,8 @@
   export let showModal;
   export let toggleModal;
 
+  let isCartEmpty = true;
+
   const handleEsc = (event) => {
     if (event.key === 'Escape') {
       toggleModal();
@@ -13,7 +15,11 @@
   };
 
   const removeItem = (id) => {
-    cart.update(items => items.filter(item => item.ID !== id));
+    cart.update(items => {
+      const updatedItems = items.filter(item => item.ID !== id);
+      isCartEmpty = updatedItems.length === 0;
+      return updatedItems;
+    });
   };
 
   const generateWhatsAppMessage = (cartItems) => {
@@ -35,8 +41,8 @@
     const cartItems = get(cart); // Obtiene los artículos del carrito usando 'get' de 'svelte/store'
     const message = generateWhatsAppMessage(cartItems);
     const encodedMessage = encodeURIComponent(message);
-    const phoneNumber = "tu-numero-de-telefono"; // Reemplaza con tu número de teléfono
-    const whatsappURL = `https://wa.me/${3812018090}?text=${encodedMessage}`;
+    const phoneNumber = "3812018090"; // Reemplaza con tu número de teléfono
+    const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
     window.open(whatsappURL, '_blank');
   };
 
@@ -46,6 +52,10 @@
       if (storedCart) {
         cart.set(JSON.parse(storedCart));
       }
+
+      cart.subscribe(items => {
+        isCartEmpty = items.length === 0;
+      });
 
       if ($showModal) {
         window.addEventListener('keydown', handleEsc);
@@ -96,7 +106,8 @@
       <div class="items-center px-4 py-3">
         <button 
           on:click={sendWhatsAppMessage}
-          class="px-4 py-2 bg-indigo-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+          class="px-4 py-2 bg-indigo-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+          disabled={isCartEmpty}>
           Comprar
         </button>
       </div>
