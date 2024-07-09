@@ -1,5 +1,5 @@
 <script>
-  import NavBar from '$lib/components/nav/NavBar.svelte';
+  import NavBar from '$lib/components/nav/navBar.svelte';
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
   import { get } from 'svelte/store';
