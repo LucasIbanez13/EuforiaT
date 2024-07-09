@@ -6,8 +6,6 @@
   export let showModal;
   export let toggleModal;
 
-  let isCartEmpty = true;
-
   const handleEsc = (event) => {
     if (event.key === 'Escape') {
       toggleModal();
@@ -15,11 +13,7 @@
   };
 
   const removeItem = (id) => {
-    cart.update(items => {
-      const updatedItems = items.filter(item => item.ID !== id);
-      isCartEmpty = updatedItems.length === 0;
-      return updatedItems;
-    });
+    cart.update(items => items.filter(item => item.ID !== id));
   };
 
   const generateWhatsAppMessage = (cartItems) => {
@@ -38,10 +32,10 @@
   };
 
   const sendWhatsAppMessage = () => {
-    const cartItems = get(cart); // Obtiene los artículos del carrito usando 'get' de 'svelte/store'
+    const cartItems = get(cart);
     const message = generateWhatsAppMessage(cartItems);
     const encodedMessage = encodeURIComponent(message);
-    const phoneNumber = "3812018090"; // Reemplaza con tu número de teléfono
+    const phoneNumber = "3812018090";
     const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
     window.open(whatsappURL, '_blank');
   };
@@ -53,25 +47,12 @@
         cart.set(JSON.parse(storedCart));
       }
 
-      cart.subscribe(items => {
-        isCartEmpty = items.length === 0;
-      });
-
       if ($showModal) {
         window.addEventListener('keydown', handleEsc);
       }
 
-      const unsubscribe = showModal.subscribe((value) => {
-        if (value) {
-          window.addEventListener('keydown', handleEsc);
-        } else {
-          window.removeEventListener('keydown', handleEsc);
-        }
-      });
-
       onDestroy(() => {
         window.removeEventListener('keydown', handleEsc);
-        unsubscribe();
       });
     }
   });
@@ -79,7 +60,7 @@
 
 <style>
   .modal {
-    z-index: 50; /* Ajusta este valor según sea necesario */
+    z-index: 50;
   }
 </style>
 
@@ -107,7 +88,7 @@
         <button 
           on:click={sendWhatsAppMessage}
           class="px-4 py-2 bg-indigo-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-300"
-          disabled={isCartEmpty}>
+          disabled={$cart.length === 0}>
           Comprar
         </button>
       </div>
