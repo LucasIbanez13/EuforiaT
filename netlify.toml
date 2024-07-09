@@ -1,8 +1,7 @@
 [build]
+  base = "src/routes/tienda"
   command = "npm run build"
-  publish = "build"
 
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+[dev]
+  publish = "public"
+  command = "npm run dev"
